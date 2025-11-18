@@ -41,7 +41,54 @@ print(copy_paste_attacks ("watermarked_text", "" \
 
 # insertion_attacks
 #words or sentences are randomly added into the text to change the generated watermark
+def insertion_attack(watermarked_text, ratio, words):
+    watermarked_text_tokenized = tokenizer(watermarked_text)
 
+    len_watermarked_text = len(watermarked_text_tokenized)
+    len_words_to_add = math.ceil(len_watermarked_text * ratio)
+
+    random_positions = []
+    for i in range(len_words_to_add):
+        pos = random.randrange(0, len_watermarked_text)
+        random_positions.append(pos)
+
+    for pos in random_positions:
+        watermarked_text_tokenized.insert(pos, random.choice(words))
+    
+    return " ".join(watermarked_text_tokenized)
 
 
 # insert_noise_attacks
+
+def insert_noise_attack(watermarked_text, ratio, punctuations=[",",":"]):
+    watermarked_text_tokenized = tokenizer(watermarked_text)
+
+    len_watermarked_text = len(watermarked_text_tokenized)
+    len_words_to_add = math.ceil(len_watermarked_text * ratio)
+
+    random_positions = []
+    for i in range(len_words_to_add):
+        pos = random.randrange(0, len_watermarked_text)
+        random_positions.append(pos)
+
+    for pos in random_positions:
+        x = random.randrange(1,4)
+        if x == 1:
+            # add punctionations in random places
+            punc = random.choice(punctuations)
+            watermarked_text_tokenized[pos] += punc
+        elif x == 2:
+            # delete a letter
+            select_word = watermarked_text_tokenized[pos]
+            index_to_delete = random.randrange(0, len(select_word))
+            removed_word = select_word[:index_to_delete] + select_word[index_to_delete+1:]
+            watermarked_text_tokenized[pos] = removed_word
+        else:
+            # add a letter
+            select_word = watermarked_text_tokenized[pos]
+            insert_index = random.randrange(0, len(select_word))
+            vowels = ["a", "e", "i", "o", "u"]
+            modified_word = select_word[:insert_index] + random.choice(vowels) + select_word[insert_index+1:]
+            watermarked_text_tokenized[pos] = modified_word
+    
+    return " ".join(watermarked_text_tokenized)
