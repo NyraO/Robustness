@@ -1,5 +1,5 @@
 import math
-
+import random
 def tokenizer(text):
     return text.split(" ")
 
