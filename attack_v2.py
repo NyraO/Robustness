@@ -20,8 +20,6 @@ def copy_paste_attacks (watermarked_text, excerpt, dilution_rate):
     final_text = watermarked_text + " " + cropped_excerpt
     return final_text
 
-
-
 print(copy_paste_attacks ("watermarked_text", "" \
 "Tom he made a sign to me kind of a little noise with his mouth and we" \
 "went creeping away on our hands and knees. When we was ten foot off" \
@@ -35,13 +33,3 @@ print(copy_paste_attacks ("watermarked_text", "" \
 "would do Tom but he must crawl to where Jim was, on his hands and" \
 "knees, and play something on him. I waited, and it seemed a good while," \
 "everything was so still and lonesome.", 0.2))
-  
-
-
-
-# insertion_attacks
-#words or sentences are randomly added into the text to change the generated watermark
-
-
-
-# insert_noise_attacks
