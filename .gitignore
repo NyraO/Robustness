@@ -1,0 +1,40 @@
+# Virtual Environments (Common names)
+venv/
+.venv/
+env/
+.env/
+my_env/
+
+# Python compiled files (Bytecode)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Python distribution and build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+.tox/
+.nox/
+.coverage
+htmlcov/
+.pytest_cache/
+
+# System specific
+.DS_Store
+Thumbs.db
+
+# If you created the venv directly in the root (based on your file list)
+pyvenv.cfg
+share/
+lib/
+bin/
+include/
