@@ -1,37 +1,10 @@
 import random
-from nltk.corpus import wordnet
-from nltk.tokenize import word_tokenize
-from nltk.tokenize.treebank import TreebankWordDetokenizer
+import re
+from nltk.corpus import wordnet as wn
 from nltk import pos_tag
 
 
-def nltk_pos_to_wordnet_pos(nltk_pos):
-    """Map NLTK POS tags to WordNet POS tags"""
-    if nltk_pos.startswith("J"):
-        return wordnet.ADJ
-    elif nltk_pos.startswith("V"):
-        return wordnet.VERB
-    elif nltk_pos.startswith("N"):
-        return wordnet.NOUN
-    elif nltk_pos.startswith("R"):
-        return wordnet.ADV
-    else:
-        return ''
-
-
-def get_synonyms(word, wn_pos):
-    """Return a list of candidate synonyms for 'word' with given wordnet pos"""
-    syns = set()
-    for syn in wordnet.synsets(word, pos=wn_pos):
-        for lemma in syn.lemmas():
-            candidate = lemma.name().replace("_", " ")
-            # Avoid the identical form (case-insensitive)
-            if candidate.lower() != word.lower():
-                syns.add(candidate)
-    return list(syns)
-
-
-def synonym_attack(text, replace_prob=0.3, max_candidates=5):
+def synonym_attack(text, replace_prob=0.2, max_replace_ratio=0.1, seed=None):
     """
     Paraphrase "watermarked text" randomly substituting words with synonyms
 
@@ -42,38 +15,65 @@ def synonym_attack(text, replace_prob=0.3, max_candidates=5):
 
     Returns: attacked text
     """
-    if not 0 <= replace_prob <= 1:
-        raise ValueError("replace_prob must be between 0 and 1")
 
-    tokens = word_tokenize(text)
-    tags = pos_tag(tokens)  # list of (token, pos)
+    if seed is not None:
+        random.seed(seed)
+    tokens = re.findall(r"\w+|[^\w\s]", text, re.UNICODE)  # Tokenize with punctuation preserved
+    words_only = [t for t in tokens if t.isalpha()]
+    pos_tags = pos_tag(words_only)
+    token_word_indices = [i for i, t in enumerate(tokens) if t.isalpha()]
+    max_replacements = int(len(words_only) * max_replace_ratio)
+    # positions of words to substitute with synonym
+    candidate_word_positions = list(range(0, len(words_only), len(words_only) // max_replacements))[:max_replacements]
+    replaced = 0
+    for wpos in candidate_word_positions:
+        if replaced >= max_replacements:
+            break
+        if random.random() > replace_prob:
+            continue
+        word, penn_pos = pos_tags[wpos]
+        wn_pos = penn_to_wn_pos(penn_pos)
+        if wn_pos is None:
+            continue
+        synonym = get_synonym(word, wn_pos)
+        if synonym and synonym.lower() != word.lower():
+            token_idx = token_word_indices[wpos]
+            if word.isupper():
+                tokens[token_idx] = synonym.upper()
+            else:
+                tokens[token_idx] = synonym.lower()
+            replaced += 1
+    return " ".join(tokens)
 
-    out_tokens = []
-    for (token, tag) in tags:
-        # Check all tokens are letters (skip punctuation, numbers, etc.)
-        if token.isalpha() and random.uniform(0, 1) < replace_prob:
-            wn_pos = nltk_pos_to_wordnet_pos(tag)
-            if wn_pos:
-                candidates = get_synonyms(token, wn_pos)
-                if candidates:
-                    # limit candidates and pick one at random
-                    if len(candidates) > max_candidates:
-                        candidates = random.sample(candidates, max_candidates)
-                    replacement = random.choice(candidates)
-                    # Match the case of the original word
-                    if token.isupper():
-                        replacement.upper()
-                    elif token.islower():
-                        replacement.lower()
-                    out_tokens.append(replacement)
-                    continue  # done for this token
-        out_tokens.append(token)  # keep original token for default
 
-    detokenizer = TreebankWordDetokenizer()
-    return detokenizer.detokenize(out_tokens)
+def penn_to_wn_pos(penn_pos: str):
+    """Convert Penn Treebank POS tags to WordNet POS tags"""
+    if penn_pos.startswith("N"):
+        return wn.NOUN
+    if penn_pos.startswith("V"):
+        return wn.VERB
+    if penn_pos.startswith("J"):
+        return wn.ADJ
+    if penn_pos.startswith("R"):
+        return wn.ADV
+    return None
 
 
-# if __name__ == "__main__":
-#     src = "A small lantern flickered as the wind carried the scent of pine through the quiet campsite."
-#     print("Watermarked Text: ", src)
-#     print("Attacked Text:", synonym_attack(src, replace_prob=0.3))
+def get_synonym(word, wn_pos):
+    synonyms = wn.synsets(word, pos=wn_pos)
+    if not synonyms:
+        return None
+    candidates = []
+    for i in synonyms:
+        for lemma in i.lemmas():
+            name = lemma.name().replace("_", " ")
+            if name.lower() != word.lower():
+                candidates.append(name)
+    return random.choice(candidates) if candidates else None
+
+
+if __name__ == "__main__":
+    with open("goethe_text.txt") as file:
+        src = str(file.read())
+        print("Watermarked Text:", src)
+        print("Attacked Text:", synonym_attack(src, replace_prob=0.3, max_replace_ratio=0.8))

@@ -4,28 +4,22 @@ def generative_attack(text, token, n):
 
     Parameters:
     - text: input watermarked text
-    - token: token to insert (e.g., "!")
-    - n: insert the token after every n words (n >= 1)
+    - token: token to insert (e.g., "🙃")
+    - n: insert the token after every n words
 
     Returns: attacked text
     """
     words = text.split()
     output_words = []
-
-    if n < 1:
-        raise ValueError("Parameter n must be at least 1")
-    elif n > len(words):
-        raise ValueError("Parameter n must be less than the number of words")
-
-    for i, word in enumerate(words, start=1):
-        output_words.append(word)
+    for i in range(len(words)):
+        output_words.append(words[i])
         if i % n == 0:
             output_words.append(token)
-
     return " ".join(output_words)
 
 
-# if __name__ == "__main__":
-#     src = "A small lantern flickered as the wind carried the scent of pine through the quiet campsite."
-#     print("Watermarked Text: ", src)
-#     print("Attacked Text:", generative_attack(src, token="!", n=3))
+if __name__ == "__main__":
+    with open("goethe_text.txt") as file:
+        src = str(file.read())
+        print("Watermarked Text:", src)
+        print("Attacked Text:", generative_attack(src, token="🙃", n=2))

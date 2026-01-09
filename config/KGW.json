@@ -1,0 +1,13 @@
+{
+    "algorithm_name": "KGW",
+    "gamma": 0.5,
+    "delta": 2.0,
+    "hash_key": 15485863,
+    "z_threshold": 4.0,
+    "prefix_length": 1,
+    "metric": "repetition_penalty",
+    "repetition_penalty": 1.1,
+    "f_scheme": "min",
+    "window_scheme": "left",
+    "select_green_tokens": true
+}
