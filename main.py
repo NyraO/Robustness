@@ -138,14 +138,14 @@ run_and_evaluate("Random Reorder", result_rnd_reorder, initial_score, current_ev
 result_max_dist = reorder_random_max_dist(wm_text, strength=10, max_distance=5)
 run_and_evaluate("Reorder Max Dist", result_max_dist, initial_score, current_evaluator)
 
-result_syn = synonym_attack(wm_text, replace_prob=0.3)
-run_and_evaluate("Synonym Attack", result_syn, initial_score, current_evaluator)
+# result_syn = synonym_attack(wm_text, replace_prob=0.3)
+# run_and_evaluate("Synonym Attack", result_syn, initial_score, current_evaluator)
 
-result_pas = syn_transform(wm_text, strength=2)
-run_and_evaluate("Active-to-Passive", result_pas, initial_score, current_evaluator)
+# result_pas = syn_transform(wm_text, strength=2)
+# run_and_evaluate("Active-to-Passive", result_pas, initial_score, current_evaluator)
 
-result_rnd_pas = rand_syn_transform(wm_text, strength=2)
-run_and_evaluate("Random Active-to-Passive", result_rnd_pas, initial_score, current_evaluator)
+# result_rnd_pas = rand_syn_transform(wm_text, strength=2)
+# run_and_evaluate("Random Active-to-Passive", result_rnd_pas, initial_score, current_evaluator)
 
 result_para = paraphrasing_attack(wm_text, style="academic", temperature=0.7)
 run_and_evaluate("LLM Paraphrasing", result_para, initial_score, current_evaluator)
