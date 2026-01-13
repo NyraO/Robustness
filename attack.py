@@ -104,19 +104,14 @@ def insert_noise_attack(watermarked_text, ratio, punctuations=[",", ":", ";"]):
     return " ".join(tokens)
 
 
-def deletion(r_file, strength, w_file):
+def deletion(text, strength):
     """
     Strength is an integer and decides after which amount of words a word is not used
     Strenght of one deletes every word
     """
-
-    # reading original
-    with open(r_file, 'r') as file:
-        txt_list = file.read().splitlines()
-
-    # creating new file for manipulated text
-    open(w_file, 'x')
-
+    
+    txt_list = text.splitlines()
+    output_words = []
     # count used for skipping words (deletion)
     count = 0
 
@@ -125,23 +120,19 @@ def deletion(r_file, strength, w_file):
         for word in string.split():
 
             if (count % strength) != 0:
-                # writing unskipped words in new file
-                with open(w_file, 'a') as f:
-                    f.write(word + " ")
+                # writing unskipped words in new list
+                output_words.append(word)
             count += 1
+    return " ".join(output_words)
 
 
-def delete_random(r_file, strength, w_file):
+def delete_random(text, strength):
     """
     Strength is an integer and decides the amount of words deleted from the text
     """
 
-    # reading original
-    with open(r_file, 'r') as file:
-        txt_list = file.read().split()
-
-    # creating new file for manipulated text
-    open(w_file, 'x')
+    txt_list = text.split()
+    output_words = []
 
     rand = []
     count = 0
@@ -161,22 +152,18 @@ def delete_random(r_file, strength, w_file):
             if dele < strength - 1:
                 dele += 1
         else:
-            with open(w_file, 'a') as f:
-                f.write(word + " ")
+            output_words.append(word)
         count += 1
+    return " ".join(output_words)
 
 
-def delete_portion(r_file, begin, end, w_file):
+def delete_portion(text, begin, end):
     """
     begin and end determine where the deleted part begins and where it ends
     """
 
-    # reading original
-    with open(r_file, 'r') as file:
-        txt_list = file.read().splitlines()
-
-    # creating new file for manipulated text
-    open(w_file, 'x')
+    txt_list = text.splitlines()
+    output_words = []
 
     # count used for skipping words (deletion)
     count = 0
@@ -187,9 +174,9 @@ def delete_portion(r_file, begin, end, w_file):
 
             if (begin > count) or (count > end):
                 # writing unskipped words in new file
-                with open(w_file, 'a') as f:
-                    f.write(word + " ")
+                output_words.append(word)
             count += 1
+    return " ".join(output_words)
 
 
 def generative_attack(text, token, n):
@@ -302,18 +289,16 @@ def get_synonym(word, wn_pos):
     return random.choice(candidates) if candidates else None
 
 
-def reorder(r_file, strength, distance, w_file):
+def reorder(text, strength, distance):
     """
     Strength for choosing words
     distance for distance between original position and new position
     """
 
     # reading original
-    with open(r_file, 'r') as file:
-        txt_list = file.read().splitlines()
-
-    # creating new file for manipulated text
-    open(w_file, 'x')
+   
+    txt_list = text.splitlines()
+    output_words = []
 
     # count used for skipping words (deletion)
     count = 0
@@ -331,34 +316,36 @@ def reorder(r_file, strength, distance, w_file):
 
             # unchosen words get added to file
             else:
-                with open(w_file, 'a') as f:
-                    f.write(word + " ")
+                output_words.append(word)
 
             # creating speparate list for iteration -> else length changed while iterating
             for c in list(marked.keys()):
 
                 # if enough distance cover -> saved words get added
                 if (c + distance) == count:
-                    with open(w_file, 'a') as f:
-                        f.write(marked[c] + " ")
+                    output_words.append(marked[c])
                     marked.pop(c)
 
             count += 1
+    for c in sorted(marked.keys()):
+        output_words.append(marked[c])
+
+    return " ".join(output_words)
 
 
-def reorder_random(r_file, strength, distance, w_file):
+def reorder_random(text, strength, distance):
     """
     Strength for choosing amount of moved words
     distance for distance between original position and new position
     """
 
     # reading original
-    with open(r_file, 'r') as file:
-        txt_list = file.read().split()
+
+    txt_list = text.split()
 
     # creating new file for manipulated text
-    open(w_file, 'x')
-
+    
+    output_words = []
     count = 0
 
     # dictionary to map specific counts to words
@@ -381,38 +368,37 @@ def reorder_random(r_file, strength, distance, w_file):
 
         # unchosen words get added to file
         else:
-            with open(w_file, 'a') as f:
-                f.write(word + " ")
+            output_words.append(word)
 
         # creating speparate list for iteration -> else length changed while iterating
         for c in list(marked.keys()):
 
             # if enough distance cover -> saved words get added
             if (c + distance) == count:
-                with open(w_file, 'a') as f:
-                    f.write(marked[c] + " ")
+                output_words.append(marked[c])
                 marked.pop(c)
 
         count += 1
+    
 
     # adding words that never reached distance
     for c in sorted(marked.keys()):
-        with open(w_file, 'a') as f:
-            f.write(marked[c] + " ")
+        output_words.append(marked[c])
+    
+    return " ".join(output_words)
 
 
-def reorder_random_max_dist(r_file, strength, max_distance, w_file):
+def reorder_random_max_dist(text, strength, max_distance):
     """
     Strength for choosing amount of moved words
     distance for distance between original position and new position
     """
 
     # reading original
-    with open(r_file, 'r') as file:
-        txt_list = file.read().split()
+   
+    txt_list = text.split()
+    output_words = []
 
-    # creating new file for manipulated text
-    open(w_file, 'x')
 
     count = 0
 
@@ -436,40 +422,38 @@ def reorder_random_max_dist(r_file, strength, max_distance, w_file):
 
         # unchosen words get added to file
         else:
-            with open(w_file, 'a') as f:
-                f.write(word + " ")
+            output_words.append(word)
 
         # creating sepeparate list for iteration -> else length changed while iterating
         for c in list(marked.keys()):
 
             # if enough distance cover -> saved words get added
             if c == count:
-                with open(w_file, 'a') as f:
-                    f.write(marked[c] + " ")
+                output_words.append(marked[c])
                 marked.pop(c)
 
         count += 1
 
     # adding words that never reached distance
     for c in sorted(marked.keys()):
-        with open(w_file, 'a') as f:
-            f.write(marked[c] + " ")
+        output_words.append(marked[c])
+    
+    return " ".join(output_words)
 
 
-def syn_transform(r_file, strength, w_file):
+def syn_transform(text, strength):
     """
     Strength for one of how many sentences used
     """
 
-    # reading out whole text file
-    with open(r_file, 'r') as file:
-        txt_list = file.read()
+
+    txt_list = text
 
     # using nltk to split text into single sentences
     sentences = sent_tokenize(txt_list)
 
     # creating file for saving
-    open(w_file, 'x')
+    output_sentences = []
 
     # count for amount of sentences changed
     count = 0
@@ -488,27 +472,21 @@ def syn_transform(r_file, strength, w_file):
         # space after end of sentence
         s_out = s_out.strip() + ' '
 
-        # write sentence into new file
-        with open(w_file, 'a') as f:
-            f.write(s_out.capitalize())
+        output_sentences.append(s_out)
 
         count += 1
 
+    return " ".join(output_sentences)
 
-def rand_syn_transform(r_file, strength, w_file):
+
+def rand_syn_transform(text, strength):
     """
     Strength for one of how many sentences used
     """
-
-    # reading out whole text file
-    with open(r_file, 'r') as file:
-        txt_list = file.read()
-
     # using nltk to split text into single sentences
-    sentences = sent_tokenize(txt_list)
+    sentences = sent_tokenize(text)
 
-    # creating file for saving
-    open(w_file, 'x')
+    output_sentences = []
 
     # count for amount of sentences changed
     count = 0
@@ -534,8 +512,7 @@ def rand_syn_transform(r_file, strength, w_file):
         # space after end of sentence
         s_out = s_out.strip() + ' '
 
-        # write sentence into new file
-        with open(w_file, 'a') as f:
-            f.write(s_out)
+        output_sentences.append(s_out)
 
         count += 1
+    return " ".join(output_sentences)

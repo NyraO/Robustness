@@ -1,6 +1,6 @@
 import difflib
 from generate import generate_watermarked_text, evaluate_watermark
-from attack import copy_paste_attack, insertion_attack, insert_noise_attack
+from attack import *
 
 # --- HELPER: Visualization ---
 def print_highlighted(original_text, modified_text):
