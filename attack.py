@@ -3,10 +3,10 @@ import random
 import re
 from nltk.corpus import wordnet as wn
 from nltk import pos_tag
-from groq import Groq
+#from groq import Groq
 from random import randrange
 from nltk import sent_tokenize
-from act_pas import *
+#from act_pas import *
 
 
 def tokenizer(text):
@@ -192,38 +192,38 @@ def generative_attack(text, token, n):
     return " ".join(output_words)
 
 
-def paraphrasing_attack(text, style, temperature=0.6, top_p=0.6, size=1):
-    """
-    Paraphrase a sentence using LLM
-    """
+# def paraphrasing_attack(text, style, temperature=0.6, top_p=0.6, size=1):
+#     """
+#     Paraphrase a sentence using LLM
+#     """
 
-    key = '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'
-    task = f"""
-    You are a paraphrasing engine. Rewrite the user's text while preserving meaning
-    Style: {style}.
-    Rules:
-    - Do not shorten meaning
-    - Do not add new ideas
-    - Produce natural and fluent English
-    """
+#     key = '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'
+#     task = f"""
+#     You are a paraphrasing engine. Rewrite the user's text while preserving meaning
+#     Style: {style}.
+#     Rules:
+#     - Do not shorten meaning
+#     - Do not add new ideas
+#     - Produce natural and fluent English
+#     """
 
-    client = Groq(api_key=key)
-    res = ""
-    completion = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[
-            {"role": "system", "content": task},
-            {"role": "user", "content": text}
-        ],
-        temperature=temperature,
-        max_tokens=int(sum([1 for c in text if c.isalpha()]) * 0.25 * size),
-        top_p=top_p,
-        stream=True,
-        stop=None
-    )
-    for chunk in completion:
-        res += chunk.choices[0].delta.content or ""
-    return res
+#     client = Groq(api_key=key)
+#     res = ""
+#     completion = client.chat.completions.create(
+#         model="llama-3.3-70b-versatile",
+#         messages=[
+#             {"role": "system", "content": task},
+#             {"role": "user", "content": text}
+#         ],
+#         temperature=temperature,
+#         max_tokens=int(sum([1 for c in text if c.isalpha()]) * 0.25 * size),
+#         top_p=top_p,
+#         stream=True,
+#         stop=None
+#     )
+#     for chunk in completion:
+#         res += chunk.choices[0].delta.content or ""
+#     return res
 
 
 def synonym_attack(text, replace_prob=0.2, max_replace_ratio=0.1, seed=None):
