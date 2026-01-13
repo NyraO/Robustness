@@ -1,0 +1,10 @@
+{
+    "algorithm_name": "EXP",
+    "hash_key": 15485863,
+    "prefix_length": 1,
+    "threshold": 0.5,
+    "sequence_length": 256,
+    "context_width": 1,
+    "top_k": 0,
+    "z_threshold": 4.0
+}
