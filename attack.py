@@ -6,7 +6,7 @@ from nltk import pos_tag
 from groq import Groq
 from random import randrange
 from nltk import sent_tokenize
-from act_pas import *
+from act_pas_lib.act_pas import *
 
 
 def tokenizer(text):
