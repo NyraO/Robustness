@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robust Lossless Watermarking v3.0</title>
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-3.4.0.min.js" charset="utf-8"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Robust Watermarking</h1>
+        </div>
+
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="switchTab('create')">Create</button>
+                <button class="tab-button" onclick="switchTab('detect')">Detect</button>
+                <button class="tab-button" onclick="switchTab('test')">Test Attack</button>
+                <button class="tab-button" onclick="switchTab('analysis')">Analysis</button>
+            </div>
+
+            <!-- Create Tab -->
+            <div id="create" class="tab-content active">
+                <h2 style="margin-bottom: 20px;">Create Watermark</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Enter your text below. We'll generate a watermarked text using state of the art language models.
+                </p>
+
+                <div class="form-group">
+                    <label for="originalText">Your Original Text</label>
+                    <textarea id="originalText" placeholder="Enter your text here..."></textarea>
+                </div>
+
+                <button class="btn-primary" onclick="createWatermark()">Create Robust Watermark</button>
+
+                <div id="createResult"></div>
+            </div>
+
+            <!-- Detect Tab -->
+            <div id="detect" class="tab-content">
+                <h2 style="margin-bottom: 20px;">Detect Watermark</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Paste text to check for watermarks. Works even if the text has been modified!
+                </p>
+
+                <div class="form-group">
+                    <label for="detectText">Text to Check (can be modified)</label>
+                    <textarea id="detectText" placeholder="Paste text to check for watermarks (works even if modified)..."></textarea>
+                </div>
+
+                <div class="slider-container">
+                    <label>
+                        P-Value detection threshold: <span class="slider-value" id="thresholdValue">0.01</span>
+                    </label>
+                    <input type="range" class="slider" id="threshold" min="1" max="1000" value="10" oninput="updateThreshold()">
+                    <small style="color: #666;">Lower = stricter rules for p-values (less False Positives); Higher = more tolerant (more False Positives)</small>
+                </div>
+
+                <button class="btn-primary" onclick="detectWatermark()">🔍 Detect Watermark</button>
+
+                <div id="detectResult"></div>
+                <div id="detectCharts"></div>
+            </div>
+
+            <!-- Test Attack Tab -->
+            <div id="test" class="tab-content">
+                <h2 style="margin-bottom: 20px;">Test Attack Resistance</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Test how well the watermark survives different types of attacks.
+                </p>
+
+                <div class="form-group">
+                    <label for="testText">Watermarked Text</label>
+                    <textarea id="testText" placeholder="Paste watermarked text to test against attacks..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="attackType">Attack Type</label>
+                    <select id="attackType" onchange="updateAttackParameters()">
+                        <option value="copy_paste">Copy-Paste</option>
+                        <option value="insert">Insert</option>
+                        <option value="insert_noise">Insert Noise</option>
+                        <option value="delete">Delete</option>
+                        <option value="generative">Generative</option>
+                        <option value="synonym">Synonym</option>
+                        <option value="reorder">Reorder</option>
+                        <option value="syn_transform">Syn Transform</option>
+                        <option value="paraphrase">Paraphrase</option>
+                        <option value="translation">Translation</option>
+                    </select>
+                </div>
+
+                <div id="attackParameters"></div>
+
+                <button class="btn-primary" onclick="testAttack()">Launch Attack & Test Detection</button>
+
+                <div id="testResult"></div>
+                <div id="testCharts"></div>
+            </div>
+
+            <!-- Analysis Tab -->
+            <div id="analysis" class="tab-content">
+                <h2 style="margin-bottom: 20px;">Comprehensive Robustness Analysis</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Run a full suite of tests across multiple attack types and parameter combinations to evaluate watermark robustness
+                </p>
+
+                <div class="form-group">
+                    <label for="cleanText">Clean (not watermarked) text to Analyze</label>
+                    <textarea id="cleanText" placeholder="Paste clean text..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="watermarkedText">Watermarked text to Analyze</label>
+                    <textarea id="watermarkedText" placeholder="Paste watermarked text..."></textarea>
+                </div>
+
+
+                <button class="btn-primary" onclick="analyzeRobustness()">Run Full Analysis</button>
+
+                <div id="analysisLoading" class="loading">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 15px; color: #666;">
+                    Running parameter sweep across multiple attacks (this may take a moment)...
+                    </p>
+                </div>
+				<div id="showChoiceButton"></div>
+
+                <div id="analysisResult"></div>
+				
+
+                <div id="metricsPanel" class="metrics-panel"></div>
+
+                <div id="analysisCharts">
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Info -->
+        <div class="alert alert-info" style="margin-top: 20px;">
+            <strong>How It Works:</strong> This system rewrites robustly an input text using paraphrasing LLMs with controlled sampling (temperature/top-p) and checks with a detector for watermark presence.
+            Statistical analysis (p-values) provides confidence metrics. The system measures robustness using various attacks: paraphrasing, deletion, insertion among others.
+            <br><br>
+            <strong>Statistical Metrics:</strong>
+            <ul style="margin-top: 10px; margin-left: 20px;">
+
+                <li><strong>P-Value:</strong> Measures the probability that we obtain a higher score than the observed watermark detection score by random chance in unwatermarked text. A lower p-value therefore indicates stronger evidence that the watermark is present.</li>
+                <li><strong>Significance Levels:</strong> p < 0.001 (extremely significant), p < 0.01 (highly significant), p < 0.05 (significant)</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Custom Scripts -->
+    <script src="{{ url_for('static',filename='scripts.js') }}"></script>
+</body>
+</html>
