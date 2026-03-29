@@ -1,5 +1,6 @@
 # The Robustness Project by students of Bauhaus University Weimar WiSe 2025/26
-**Goal:** This project was created to analyze the robustness of digital text watermarks
+## Goal
+ This project was created to analyze the robustness of digital text watermarks
 
 ## Procedure 
 For analysis, the texts are subjected to attacks, after which they are checked for the presence of watermarks. The following 10 attacks are used for this purpose: 
