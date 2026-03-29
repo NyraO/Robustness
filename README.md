@@ -65,4 +65,6 @@ python backend.py
 - textseal library (https://github.com/facebookresearch/textseal)
 - Active-to-Passive-Voice library for Syn transformation attack (https://github.com/rishiagarwal2000/Active-to-Passive-Voice)
 - The NLTK library for synonym attack (https://www.nltk.org/)
+- Hugging Face API for paraphrasing attack (https://huggingface.co/)
+- Flask library for web interface (https://flask.palletsprojects.com/en/stable/)
 - as well as other built-in Python and JavaScript libraries
