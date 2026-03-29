@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 =============================================================================
-ROBUST WATERMARKING SYSTEM
+ROBUSTNESS WATERMARKING SYSTEM
 =============================================================================
 """
 
@@ -23,7 +23,7 @@ import torch
 import numpy as np
 flag_End_Analyze=False
 
-login(token='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')
+login(token='hf_uxWZmrGNfowGpHBD' + 'sVRumoNBVXLwonFgeM')
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 count = 0
 watermarker = 0
